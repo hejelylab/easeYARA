@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 namespace easeYARA
 {
     public static class ScanDetails
@@ -17,7 +16,7 @@ namespace easeYARA
         public static bool isScanSusDirectories { get; set; }
         public static List<String> susDirectories = new List<string>();
         public static List<String> susDirectories2 = new List<string>();
-        public static String scanDirectory { get; set ; }
+        public static String scanDirectory { get; set; }
         public static bool isAddRules { get; set; }
         public static String addRulesFileDir { get; set; }
         public static bool isScanMemory { get; set; }

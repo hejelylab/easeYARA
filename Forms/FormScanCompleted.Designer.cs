@@ -30,6 +30,7 @@ namespace easeYARA.Forms
             this.label2 = new System.Windows.Forms.Label();
             this.lblScanning = new System.Windows.Forms.Label();
             this.btnReturnToMainScreen = new System.Windows.Forms.Button();
+            this.btnReturnToOptions = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnViewResults
@@ -41,7 +42,7 @@ namespace easeYARA.Forms
             this.btnViewResults.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.btnViewResults.ForeColor = System.Drawing.Color.White;
             this.btnViewResults.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.btnViewResults.Location = new System.Drawing.Point(483, 336);
+            this.btnViewResults.Location = new System.Drawing.Point(483, 287);
             this.btnViewResults.Name = "btnViewResults";
             this.btnViewResults.Size = new System.Drawing.Size(369, 60);
             this.btnViewResults.TabIndex = 5;
@@ -80,7 +81,7 @@ namespace easeYARA.Forms
             this.btnReturnToMainScreen.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.btnReturnToMainScreen.ForeColor = System.Drawing.Color.White;
             this.btnReturnToMainScreen.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.btnReturnToMainScreen.Location = new System.Drawing.Point(483, 416);
+            this.btnReturnToMainScreen.Location = new System.Drawing.Point(483, 439);
             this.btnReturnToMainScreen.Name = "btnReturnToMainScreen";
             this.btnReturnToMainScreen.Size = new System.Drawing.Size(369, 60);
             this.btnReturnToMainScreen.TabIndex = 17;
@@ -89,12 +90,31 @@ namespace easeYARA.Forms
             this.btnReturnToMainScreen.UseVisualStyleBackColor = false;
             this.btnReturnToMainScreen.Click += new System.EventHandler(this.btnReturnToMainScreen_Click);
             // 
+            // btnReturnToOptions
+            // 
+            this.btnReturnToOptions.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.btnReturnToOptions.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(126)))), ((int)(((byte)(140)))), ((int)(((byte)(224)))));
+            this.btnReturnToOptions.FlatAppearance.BorderSize = 0;
+            this.btnReturnToOptions.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnReturnToOptions.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.btnReturnToOptions.ForeColor = System.Drawing.Color.White;
+            this.btnReturnToOptions.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnReturnToOptions.Location = new System.Drawing.Point(483, 363);
+            this.btnReturnToOptions.Name = "btnReturnToOptions";
+            this.btnReturnToOptions.Size = new System.Drawing.Size(369, 60);
+            this.btnReturnToOptions.TabIndex = 18;
+            this.btnReturnToOptions.Text = "Return to Scan Options";
+            this.btnReturnToOptions.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnReturnToOptions.UseVisualStyleBackColor = false;
+            this.btnReturnToOptions.Click += new System.EventHandler(this.btnReturnToOptions_Click);
+            // 
             // FormScanCompleted
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(44)))), ((int)(((byte)(52)))));
             this.ClientSize = new System.Drawing.Size(1332, 750);
+            this.Controls.Add(this.btnReturnToOptions);
             this.Controls.Add(this.btnReturnToMainScreen);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.lblScanning);
@@ -111,5 +131,6 @@ namespace easeYARA.Forms
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label lblScanning;
         private System.Windows.Forms.Button btnReturnToMainScreen;
+        private System.Windows.Forms.Button btnReturnToOptions;
     }
 }

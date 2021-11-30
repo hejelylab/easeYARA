@@ -156,7 +156,7 @@ namespace easeYARA
             this.btnStatistics.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.btnStatistics.Image = ((System.Drawing.Image)(resources.GetObject("btnStatistics.Image")));
             this.btnStatistics.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.btnStatistics.Location = new System.Drawing.Point(675, 368);
+            this.btnStatistics.Location = new System.Drawing.Point(676, 368);
             this.btnStatistics.Name = "btnStatistics";
             this.btnStatistics.Size = new System.Drawing.Size(343, 60);
             this.btnStatistics.TabIndex = 2;
@@ -174,7 +174,7 @@ namespace easeYARA
             this.btnScan.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.btnScan.Image = ((System.Drawing.Image)(resources.GetObject("btnScan.Image")));
             this.btnScan.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.btnScan.Location = new System.Drawing.Point(313, 368);
+            this.btnScan.Location = new System.Drawing.Point(314, 368);
             this.btnScan.Name = "btnScan";
             this.btnScan.Size = new System.Drawing.Size(343, 60);
             this.btnScan.TabIndex = 1;
@@ -189,7 +189,7 @@ namespace easeYARA
             this.lblWelcomePnl.AutoSize = true;
             this.lblWelcomePnl.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.lblWelcomePnl.ForeColor = System.Drawing.Color.White;
-            this.lblWelcomePnl.Location = new System.Drawing.Point(313, 299);
+            this.lblWelcomePnl.Location = new System.Drawing.Point(314, 299);
             this.lblWelcomePnl.Name = "lblWelcomePnl";
             this.lblWelcomePnl.Size = new System.Drawing.Size(308, 32);
             this.lblWelcomePnl.TabIndex = 0;

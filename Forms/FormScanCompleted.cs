@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 namespace easeYARA.Forms
 {
@@ -12,7 +8,7 @@ namespace easeYARA.Forms
         public FormScanCompleted()
         {
             InitializeComponent();
-            if(ScanDetails.scanner == "yara")
+            if (ScanDetails.scanner == "yara")
             {
                 btnViewResults.Visible = false;
             }
@@ -44,12 +40,12 @@ namespace easeYARA.Forms
             ScanDetails.isFromChooseDir = false;
             ScanDetails.isFromScanOptions = false;
 
-        List<Form> openForms = new List<Form>();
+            List<Form> openForms = new List<Form>();
             foreach (Form f in Application.OpenForms)
                 openForms.Add(f);
             foreach (Form f in openForms)
             {
-                
+
                 if (f.Name != "MainForm")
                     f.Close();
             }
@@ -65,12 +61,28 @@ namespace easeYARA.Forms
 
         private void btnViewResults_Click(object sender, EventArgs e)
         {
-            foreach ( String dir in ScanDetails.scanResultFilesDirs)
+            foreach (String dir in ScanDetails.scanResultFilesDirs)
             {
                 ScanDetails.statisticsFilesDirs.Add(dir);
             }
             OpenNextForm(new Forms.FormStatistics());
 
+        }
+
+        private void btnReturnToOptions_Click(object sender, EventArgs e)
+        {
+            ScanDetails.isScanAllDrives = false;
+            ScanDetails.isScanDrive = false;
+            ScanDetails.drivesList.Clear();
+            ScanDetails.isScanSusDirectories = false;
+            ScanDetails.susDirectories2.Clear();
+            ScanDetails.scanDirectory = "";
+            ScanDetails.isAddRules = false;
+            ScanDetails.addRulesFileDir = "";
+            ScanDetails.isScanMemory = false;
+            ScanDetails.isCPULessThan50 = false;
+            ScanDetails.scanResultFilesDirs.Clear();
+            this.Close();
         }
     }
 }

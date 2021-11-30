@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
 namespace easeYARA.Forms
 {
@@ -31,7 +26,7 @@ namespace easeYARA.Forms
                     btnInstall.Text = "Next";
                 }
             }
-            
+
         }
         private void btnBack_Click(object sender, EventArgs e)
         {
@@ -41,7 +36,8 @@ namespace easeYARA.Forms
                 ScanDetails.isScannerLocal = false;
                 ScanDetails.scanner = "";
             }
-            else{
+            else
+            {
                 lblChooseScannerDirPnl.Text = "Choose Directory";
                 btnInstall.Text = "Install";
             }
@@ -60,23 +56,6 @@ namespace easeYARA.Forms
                     if (openFileDialog1.ShowDialog() == DialogResult.OK)
                     {
                         txtbxScannerDir.Text = openFileDialog1.FileName;
-                        if (Path.GetFileName(openFileDialog1.FileName) == "loki.exe")
-                        {
-                            ScanDetails.scanner = "loki";
-                            ScanDetails.scannerDir = Path.GetDirectoryName(openFileDialog1.FileName);
-                            //ScanDetails.scannerDir = txtbxScannerDir.Text.Substring(0, txtbxScannerDir.Text.LastIndexOf("\\loki.exe"));
-                        }
-                        else if (Path.GetFileName(openFileDialog1.FileName) == "yara64.exe")
-                        {
-                            ScanDetails.scanner = "yara";
-                            ScanDetails.scannerDir = Path.GetDirectoryName(openFileDialog1.FileName);
-                            //ScanDetails.scannerDir = txtbxScannerDir.Text.Substring(0, txtbxScannerDir.Text.LastIndexOf("\\yara64.exe")); ;
-                        }
-                        else
-                        {
-                            ScanDetails.scanner = Path.GetFileName(openFileDialog1.FileName);
-                            MessageBox.Show("Please choose scanner executable: loki.exe or yara64.exe");
-                        }
                     }
 
                 }
@@ -87,82 +66,64 @@ namespace easeYARA.Forms
                 if (result == DialogResult.OK)
                 {
                     txtbxScannerDir.Text = folderBrowserDialog1.SelectedPath;
-                    ScanDetails.scannerDir = txtbxScannerDir.Text;
                 }
             }
         }
         private void btnInstall_Click(object sender, EventArgs e)
         {
-            //if (ScanDetails.isScannerLocal && ScanDetails.scanner == "loki")
-            //{
-            //    ScanDetails.scannerDir = txtbxScannerDir.Text.Substring(0, txtbxScannerDir.Text.LastIndexOf("\\loki.exe"));
-            //}
-            
-            //if (ScanDetails.isScannerLocal && ScanDetails.scanner == "yara")
-            //{
-            //    ScanDetails.scannerDir = txtbxScannerDir.Text.Substring(0, txtbxScannerDir.Text.LastIndexOf("\\yara64.exe"));
-            //}
-
-            //if (!ScanDetails.isScannerLocal)
-            //{
-            //    ScanDetails.scannerDir = txtbxScannerDir.Text;
-            //}
-
-            //MessageBox.Show(ScanDetails.scannerDir);
-
-            if (ScanDetails.isScannerLocal && (!ScanDetails.scanner.Equals("loki") && !ScanDetails.scanner.Equals("yara")))
+            if (ScanDetails.isScannerLocal)
             {
-                MessageBox.Show("Please choose scanner executable: loki.exe or yara64.exe");
-            }
-            else
-            {
-                if (ScanDetails.isScannerLocal)
+                if (!File.Exists(txtbxScannerDir.Text))
                 {
-                    if (ScanDetails.scanner.Equals("loki"))
+                    MessageBox.Show("Please choose scanner executable: loki.exe or yara64.exe");
+                    return;
+                }
+
+                if (txtbxScannerDir.Text.EndsWith("loki.exe"))
+                {
+                    ScanDetails.scanner = "loki";
+                    ScanDetails.scannerDir = txtbxScannerDir.Text.Substring(0, txtbxScannerDir.Text.LastIndexOf("\\loki.exe"));
+
+                    DialogResult dialogResult = MessageBox.Show("Would you like to update Loki and its signatures?", "Loki Update", MessageBoxButtons.YesNo);
+                    if (dialogResult == DialogResult.Yes)
                     {
-                        DialogResult dialogResult = MessageBox.Show("Would you like to update Loki and its signatures?", "Loki Update", MessageBoxButtons.YesNo);
-                        if (dialogResult == DialogResult.Yes)
-                        {
-                            runLokiUpdate();
-                            OpenNextForm(new Forms.FormScanOptions());
-                        }
-                        else if (dialogResult == DialogResult.No)
-                        {
-                            OpenNextForm(new Forms.FormScanOptions());
-                        }
+                        ScanDetails.isFromChooseDir = true;
+                        OpenNextForm(new Forms.FormInstalling());
                     }
-                    else
+                    else if (dialogResult == DialogResult.No)
                     {
                         OpenNextForm(new Forms.FormScanOptions());
                     }
                 }
+
+                else if (txtbxScannerDir.Text.EndsWith("yara64.exe"))
+                {
+                    ScanDetails.scanner = "yara";
+                    ScanDetails.scannerDir = txtbxScannerDir.Text.Substring(0, txtbxScannerDir.Text.LastIndexOf("\\yara64.exe"));
+
+                    OpenNextForm(new Forms.FormScanOptions());
+                }
                 else
                 {
-                    ScanDetails.isFromChooseDir = true;
-                    OpenNextForm(new Forms.FormInstalling());
+                    MessageBox.Show("Please choose scanner executable: loki.exe or yara64.exe");
+                    return;
                 }
             }
-            
-        }
-        private void runLokiUpdate()
-        {
-            Directory.SetCurrentDirectory(ScanDetails.scannerDir);
-            System.Diagnostics.Process process = new System.Diagnostics.Process();
-            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-            startInfo.CreateNoWindow = true;
-            startInfo.FileName = ScanDetails.scannerDir + "\\loki.exe";
-            startInfo.Arguments = " --update";
-            startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-            process.StartInfo = startInfo;
-            process.StartInfo.UseShellExecute = false;
-            if (System.Environment.OSVersion.Version.Major >= 6)
+
+            else
             {
-                process.StartInfo.Verb = "runas";
+                if (!Directory.Exists(txtbxScannerDir.Text))
+                {
+                    MessageBox.Show("Please select a valid directory");
+                    return;
+                }
+
+                ScanDetails.scannerDir = txtbxScannerDir.Text;
+                ScanDetails.isFromChooseDir = true;
+                OpenNextForm(new Forms.FormInstalling());
             }
-    
-            process.Start();
-            process.WaitForExit();
         }
+
         private void OpenNextForm(Form nextForm)
         {
             nextForm.TopLevel = false;

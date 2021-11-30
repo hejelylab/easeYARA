@@ -1,17 +1,9 @@
-﻿using Ionic.Zip;
-using Octokit;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Management;
-using System.Net;
-using System.Security.AccessControl;
-using System.Security.Principal;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 namespace easeYARA.Forms
@@ -19,8 +11,9 @@ namespace easeYARA.Forms
     public partial class FormScanOptions : Form
     {
         bool isEdit = false;
-        string userName = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
-        //String procgovFileName;
+        bool clearOptions = false;
+        bool addRulesSuccess = false;
+
         public FormScanOptions()
         {
             InitializeComponent();
@@ -30,7 +23,7 @@ namespace easeYARA.Forms
                 {
                     rchtxbxSusDirectories.AppendText(item + "\r\n");
                 }
-                
+
             }
             if (ScanDetails.scanTarget.Equals("local"))
             {
@@ -79,17 +72,10 @@ namespace easeYARA.Forms
                 MessageBox.Show("Scanner directory contains index.yar. Either remove it manually or run the application as administrator ");
                 return;
             }
-
-            //if (ScanDetails.isCPULessThan50)
-            //{
-            //    var file = Directory.GetFiles(ScanDetails.scannerDir, "procgov64.exe", SearchOption.TopDirectoryOnly).FirstOrDefault();
-            //    if (file == null)
-            //    {
-            //        procgovDownload();
-                    
-            //    }
-            //}
-
+            if (ScanDetails.scanner == "yara" && GeneralFunctions.IsAdministrator() && File.Exists(ScanDetails.scannerDir + "\\" + "index.yar"))
+            {
+                File.Delete(ScanDetails.scannerDir + "\\" + "index.yar");
+            }
 
             if (ScanDetails.isScanDrive)
             {
@@ -139,10 +125,18 @@ namespace easeYARA.Forms
                 ScanDetails.susDirectories2 = this.rchtxbxSusDirectories.Text.Split('\n').ToList();
                 foreach (String directory in ScanDetails.susDirectories2)
                 {
-                    if (Directory.Exists(directory) && !ScanDetails.susDirectories.Contains(directory))
+                    if (ScanDetails.scanTarget.Equals("local") && Directory.Exists(directory) && !ScanDetails.susDirectories.Contains(directory))
                     {
                         string directory2 = directory.TrimEnd(new[] { '/', '\\' });
                         ScanDetails.susDirectories.Add(directory2);
+                    }
+                    if (ScanDetails.scanTarget.Equals("remote") && !ScanDetails.susDirectories.Contains(directory))
+                    {
+                        string directory2 = directory.TrimEnd(new[] { '/', '\\' });
+                        if (!string.IsNullOrEmpty(directory2))
+                        {
+                            ScanDetails.susDirectories.Add(directory2);
+                        }
                     }
                 }
                 proceed = true;
@@ -165,6 +159,25 @@ namespace easeYARA.Forms
                 }
                 else
                 {
+                    if (ScanDetails.scanner == "loki")
+                    {
+                        addRulesSuccess = GeneralFunctions.AddExternalRules();
+                        if (!addRulesSuccess)
+                            return;
+                    }
+                    else
+                    {
+                        addRulesSuccess = GeneralFunctions.AddExternalRules();
+                        if (!addRulesSuccess)
+                            return;
+
+                        if (!GeneralFunctions.IsAdministrator() && File.Exists(ScanDetails.scannerDir + "\\" + "index.yar"))
+                        {
+                            MessageBox.Show("Scanner directory contains index.yar. Either remove it manually or run the application as administrator ");
+                            return;
+                        }
+                        GeneralFunctions.copyYARARulesFilenames();
+                    }
                     proceed = true;
                 }
             }
@@ -172,19 +185,42 @@ namespace easeYARA.Forms
 
             if (proceed)
             {
-                if (ScanDetails.scanTarget.Equals("local") && !ScanDetails.isCPULessThan50 && !ScanDetails.isAddRules)
+                if (ScanDetails.scanner == "yara" && !ScanDetails.isCPULessThan50 && !ScanDetails.isAddRules)
                 {
-                    OpenNextForm(new Forms.FormScanning());
+                    var ext = new List<string> { "yar", "yara" };
+                    var myFiles = Directory.EnumerateFiles(ScanDetails.scannerDir, "*.*", SearchOption.AllDirectories).Where(s => ext.Contains(Path.GetExtension(s).TrimStart('.').ToLowerInvariant()));
+                    if (!myFiles.Any())
+                    {
+                        MessageBox.Show("Please add YARA rules files to scanner directory");
+                        return;
+                    }
+
+                    ScanDetails.isFromScanOptions = true;
+                    OpenNextForm(new Forms.FormInstalling());
+
                 }
                 else if (ScanDetails.scanTarget.Equals("local") && ScanDetails.isCPULessThan50)
                 {
-                    var file = Directory.GetFiles(ScanDetails.scannerDir, "procgov64.exe", SearchOption.TopDirectoryOnly).FirstOrDefault();
+                    var file = "";
+                    if (ScanDetails.scanner == "loki")
+                    {
+                        file = Directory.GetFiles(ScanDetails.scannerDir, "procgov.exe", SearchOption.TopDirectoryOnly).FirstOrDefault();
+                    }
+                    else if (ScanDetails.scanner == "yara")
+                    {
+                        file = Directory.GetFiles(ScanDetails.scannerDir, "procgov64.exe", SearchOption.TopDirectoryOnly).FirstOrDefault();
+                    }
                     if (file == null)
                     {
                         ScanDetails.isFromScanOptions = true;
                         OpenNextForm(new Forms.FormInstalling());
                     }
-                    else if(ScanDetails.isAddRules)
+                    else if (ScanDetails.isAddRules)
+                    {
+                        ScanDetails.isFromScanOptions = true;
+                        OpenNextForm(new Forms.FormInstalling());
+                    }
+                    else if (ScanDetails.scanner == "yara")
                     {
                         ScanDetails.isFromScanOptions = true;
                         OpenNextForm(new Forms.FormInstalling());
@@ -200,13 +236,47 @@ namespace easeYARA.Forms
                     ScanDetails.isFromScanOptions = true;
                     OpenNextForm(new Forms.FormInstalling());
                 }
+                else if (ScanDetails.scanTarget.Equals("local") && !ScanDetails.isAddRules && !ScanDetails.isCPULessThan50)
+                {
+                    ScanDetails.isFromScanOptions = true;
+                    OpenNextForm(new Forms.FormScanning());
+                }
                 else
-                { // Move this to FormInstalling 
+                {
                     ScanDetails.isFromScanOptions = true;
                     OpenNextForm(new Forms.FormInstalling());
-
                 }
+                clearOptions = true;
+                ClearSelections();
             }
+        }
+
+        private void ClearSelections()
+        {
+            clearOptions = true;
+            rbScanAllDrives.Checked = false;
+            rbScanDrive.Checked = false;
+            chklstDrives.ClearSelected();
+            foreach (int i in chklstDrives.CheckedIndices)
+            {
+                chklstDrives.SetItemCheckState(i, CheckState.Unchecked);
+            }
+
+            chklstDrives.Enabled = false;
+            txtbxDrivesLetters.Text = "";
+            txtbxDrivesLetters.Enabled = false;
+            rbScanSusDirectories.Checked = false;
+            lblEdit.Visible = false;
+            rchtxbxSusDirectories.Enabled = false;
+            chkbxAddExternalRules.Checked = false;
+            txtbxAddExternalRules.Text = "";
+            txtbxAddExternalRules.Enabled = false;
+            btnBrowseAddExternalRules.Enabled = false;
+            chkbxScanMemory.Checked = false;
+            chkbxUseLessCPU.Checked = false;
+            clearOptions = false;
+            addRulesSuccess = false;
+
         }
         private void btnBrowseScanDirectory_EnabledChanged(object sender, EventArgs e)
         {
@@ -257,7 +327,7 @@ namespace easeYARA.Forms
                 }
                 ScanDetails.isScanDrive = true;
             }
-            else
+            else if (!clearOptions)
             {
                 chklstDrives.Enabled = false;
                 txtbxDrivesLetters.Enabled = false;
@@ -272,7 +342,7 @@ namespace easeYARA.Forms
                 btnBrowseAddExternalRules.Enabled = true;
                 ScanDetails.isAddRules = true;
             }
-            else
+            else if (!clearOptions)
             {
                 txtbxAddExternalRules.Enabled = false;
                 btnBrowseAddExternalRules.Enabled = false;
@@ -285,7 +355,7 @@ namespace easeYARA.Forms
             {
                 ScanDetails.isScanMemory = true;
             }
-            else
+            else if (!clearOptions)
             {
                 ScanDetails.isScanMemory = false;
             }
@@ -296,7 +366,7 @@ namespace easeYARA.Forms
             {
                 ScanDetails.isCPULessThan50 = true;
             }
-            else
+            else if (!clearOptions)
             {
                 ScanDetails.isCPULessThan50 = false;
             }
@@ -307,7 +377,7 @@ namespace easeYARA.Forms
             {
                 ScanDetails.isScanAllDrives = true;
             }
-            else
+            else if (!clearOptions)
             {
                 ScanDetails.isScanAllDrives = false;
             }
@@ -319,7 +389,7 @@ namespace easeYARA.Forms
                 ScanDetails.isScanSusDirectories = true;
                 lblEdit.Visible = true;
             }
-            else
+            else if (!clearOptions)
             {
                 ScanDetails.isScanSusDirectories = false;
                 lblEdit.Visible = false;
@@ -337,120 +407,5 @@ namespace easeYARA.Forms
                 rchtxbxSusDirectories.Enabled = false;
             }
         }
-
-
-        //public void procgovDownload()
-        //{
-        //    string procgovGITHUBURIString = "https://github.com/lowleveldesign/process-governor/releases/download/2.9-1/procgov.zip";
-        //    Uri procgovGITHLOKIGITHUBURI = new Uri(procgovGITHUBURIString);
-        //    string remoteFilePathWithoutQueryprocgov = procgovGITHLOKIGITHUBURI.GetLeftPart(UriPartial.Path);
-        //    procgovFileName = System.IO.Path.GetFileName(remoteFilePathWithoutQueryprocgov);
-        //    string procgovlocalPath = ScanDetails.scannerDir + "\\" + procgovFileName;  
-        //    WebClient webClientLOKI = new WebClient();
-        //    webClientLOKI.Proxy = WebRequest.GetSystemWebProxy();
-        //    webClientLOKI.DownloadFile(procgovGITHUBURIString, procgovlocalPath);
-        //    webClientLOKI.Dispose();
-        //    procgovUnzip();
-        //}
-        //public async void procgovUnzip()
-        //{
-        //    Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-        //    string procgovlocalPath = ScanDetails.scannerDir + "\\" + procgovFileName;
-        //    using (Ionic.Zip.ZipFile zip1 = Ionic.Zip.ZipFile.Read(procgovlocalPath))
-        //    {
-        //        foreach (Ionic.Zip.ZipEntry entry in zip1)
-        //        {
-        //            // if this extract entries directly in the same folder with no creation of loki folder. Create it.
-        //            // if it generates an error, use txtbxDirectory.Text instead of scannerDirectory
-        //            entry.Extract(ScanDetails.scannerDir, ExtractExistingFileAction.OverwriteSilently);
-        //        }
-        //    }
-        //}
-        //private void directorySetAccessControl(string folderName)
-        //{
-        //    DirectoryInfo dInfo = new DirectoryInfo(folderName);
-        //    DirectorySecurity dSecurity = dInfo.GetAccessControl();
-        //    dSecurity.SetAccessRuleProtection(true, false);
-        //    var administratorsGroupAccount = new NTAccount("Administrators");
-        //    dSecurity.AddAccessRule(new FileSystemAccessRule(administratorsGroupAccount, FileSystemRights.FullControl, InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit, PropagationFlags.None, AccessControlType.Allow));
-        //    dInfo.SetAccessControl(dSecurity);
-        //    var AuthenticatedUsersAccounts = new NTAccount("Authenticated Users");
-        //    dSecurity.RemoveAccessRuleAll(new FileSystemAccessRule(AuthenticatedUsersAccounts, FileSystemRights.FullControl, AccessControlType.Allow));
-        //    if (folderName == ScanDetails.scannerDir)
-        //    {
-        //        dSecurity.AddAccessRule(new FileSystemAccessRule(AuthenticatedUsersAccounts, FileSystemRights.ReadAndExecute, InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit, PropagationFlags.None, AccessControlType.Allow));
-        //        dInfo.SetAccessControl(dSecurity);
-        //        shareFolder(ScanDetails.scannerDir, dInfo.Name, "This is YARA Scanner Share");
-        //        ScanDetails.scannerDirUNCPath = "\\\\" + ScanDetails.computerName + "\\" + dInfo.Name;
-        //    }
-        //    if ((dInfo.FullName).ToString().Contains("YARAScanResults"))
-        //    {
-        //        dSecurity.AddAccessRule(new FileSystemAccessRule(AuthenticatedUsersAccounts, FileSystemRights.Write | FileSystemRights.ReadAttributes, InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit, PropagationFlags.None, AccessControlType.Allow));
-        //        dInfo.SetAccessControl(dSecurity);
-        //        shareFolder((dInfo.FullName).ToString(), dInfo.Name, "This is YARA Scan Results Share");
-        //        ScanDetails.yaraResultsDirectoryUNCPath = "\\\\" + ScanDetails.computerName + "\\" + dInfo.Name;
-        //    }
-        //}
-        //private void shareFolder(string FolderPath, string ShareName, string Description)
-        //{
-        //    try
-        //    {
-        //        ManagementClass managementClass = new ManagementClass("Win32_Share");
-        //        ManagementBaseObject inParams = managementClass.GetMethodParameters("Create");
-        //        ManagementBaseObject outParams;
-        //        inParams["Description"] = Description;
-        //        inParams["Name"] = ShareName;
-        //        inParams["Path"] = FolderPath;
-        //        inParams["Type"] = 0x0; // Disk Drive
-        //        NTAccount authenticatedUsersAccount = new NTAccount(null, "AUTHENTICATED USERS");
-        //        SecurityIdentifier authenticatedUserssid = (SecurityIdentifier)authenticatedUsersAccount.Translate(typeof(SecurityIdentifier));
-        //        byte[] authenticatedUserssidArray = new byte[authenticatedUserssid.BinaryLength];
-        //        authenticatedUserssid.GetBinaryForm(authenticatedUserssidArray, 0);
-        //        ManagementObject authenticateUsers = new ManagementClass("Win32_Trustee");
-        //        authenticateUsers["Domain"] = null;
-        //        authenticateUsers["Name"] = "AUTHENTICATED USERS";
-        //        authenticateUsers["SID"] = authenticatedUserssidArray;
-        //        ManagementObject daclAuthenticatedUsers = new ManagementClass("Win32_Ace");
-        //        daclAuthenticatedUsers["AccessMask"] = 1245631;
-        //        //daclAuthenticatedUsers["AccessMask"] = 1179817;
-        //        daclAuthenticatedUsers["AceFlags"] = 3;
-        //        daclAuthenticatedUsers["AceType"] = 0;
-        //        daclAuthenticatedUsers["Trustee"] = authenticateUsers;
-        //        ManagementObject securityDescriptor = new ManagementClass("Win32_SecurityDescriptor");
-        //        securityDescriptor["ControlFlags"] = 4; //SE_DACL_PRESENT 
-        //        securityDescriptor["DACL"] = new object[] { daclAuthenticatedUsers };
-        //        inParams["Access"] = securityDescriptor;
-        //        outParams = managementClass.InvokeMethod("Create", inParams, null);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show(ex.Message, "error, couldn't shrare folders as intended");
-        //    }
-        //}
-        //private string yaraResultsDirectoryCreation()
-        //{
-        //    MessageBox.Show("hello1");
-        //    string path = ScanDetails.scannerDir;
-        //    DirectoryInfo parentDir = Directory.GetParent(path);
-        //    string yaraResultsDirectory = parentDir + "\\YARAScanResults";
-        //    MessageBox.Show(path);
-        //    MessageBox.Show(parentDir.ToString());
-        //    MessageBox.Show(yaraResultsDirectory);
-        //    try
-        //    {
-        //        if (Directory.Exists(yaraResultsDirectory))
-        //        {
-        //            MessageBox.Show("hello2");
-        //            Console.WriteLine("That path exists already.");
-        //        }
-        //        DirectoryInfo di = Directory.CreateDirectory(yaraResultsDirectory);
-        //        MessageBox.Show("hello3");
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Console.WriteLine("The process failed: {0}", e.ToString());
-        //    }
-        //    return yaraResultsDirectory;
-        //}
     }
 }

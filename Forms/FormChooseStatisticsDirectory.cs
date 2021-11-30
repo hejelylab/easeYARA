@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
 
 namespace easeYARA.Forms
@@ -18,7 +13,7 @@ namespace easeYARA.Forms
 
         private void btnBrowse_Click(object sender, EventArgs e)
         {
-            
+
             using (openFileDialog1)
             {
                 openFileDialog1.InitialDirectory = "c:\\";
@@ -32,25 +27,37 @@ namespace easeYARA.Forms
                     txtbxStstisticsFilesDir.Text = "";
                     foreach (String file in openFileDialog1.FileNames)
                     {
-                        ScanDetails.statisticsFilesDirs.Add(file);
-                        txtbxStstisticsFilesDir.Text += " \"" + file + "\"";
+                        txtbxStstisticsFilesDir.Text += file + ",";
                     }
-
+                    txtbxStstisticsFilesDir.Text = txtbxStstisticsFilesDir.Text.Remove(txtbxStstisticsFilesDir.Text.Length - 1, 1);
                 }
             }
         }
 
         private void btnViewStatistics_Click(object sender, EventArgs e)
         {
-            foreach (String dir in ScanDetails.statisticsFilesDirs)
+            long filesSize = 0;
+            String[] dirs = txtbxStstisticsFilesDir.Text.Split(',');
+            foreach (String dir in dirs)
             {
+                ScanDetails.statisticsFilesDirs.Add(dir);
                 if (!File.Exists(dir))
                 {
                     MessageBox.Show("Please select a valid file");
+                    ScanDetails.statisticsFilesDirs.Clear();
                     return;
                 }
+
+                filesSize += new System.IO.FileInfo(dir).Length;
             }
-            
+
+            if (filesSize > 52428800)
+            {
+                MessageBox.Show("The sum of all files size must be less than 50MB.");
+                ScanDetails.statisticsFilesDirs.Clear();
+                return;
+            }
+
             OpenNextForm(new Forms.FormStatistics());
         }
 

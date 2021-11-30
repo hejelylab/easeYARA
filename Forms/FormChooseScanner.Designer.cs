@@ -105,6 +105,7 @@ namespace easeYARA.Forms
             // btnHaveScanner
             // 
             this.btnHaveScanner.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.btnHaveScanner.AutoSize = true;
             this.btnHaveScanner.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(44)))), ((int)(((byte)(52)))));
             this.btnHaveScanner.FlatAppearance.BorderSize = 0;
             this.btnHaveScanner.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -113,7 +114,7 @@ namespace easeYARA.Forms
             this.btnHaveScanner.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.btnHaveScanner.Location = new System.Drawing.Point(798, 418);
             this.btnHaveScanner.Name = "btnHaveScanner";
-            this.btnHaveScanner.Size = new System.Drawing.Size(220, 34);
+            this.btnHaveScanner.Size = new System.Drawing.Size(220, 35);
             this.btnHaveScanner.TabIndex = 7;
             this.btnHaveScanner.Text = "Already have a scanner";
             this.btnHaveScanner.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
@@ -159,6 +160,7 @@ namespace easeYARA.Forms
             this.Text = "FormChooseScanner";
             this.ResumeLayout(false);
             this.PerformLayout();
+
         }
         #endregion
         private System.Windows.Forms.Button btnLokiScanner;

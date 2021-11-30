@@ -83,22 +83,24 @@ namespace easeYARA.Forms
             this.rbInclude3 = new System.Windows.Forms.RadioButton();
             this.rbExclude3 = new System.Windows.Forms.RadioButton();
             this.label19 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
+            this.lblColorRed = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.lblAlertsNum = new System.Windows.Forms.Label();
             this.lblWarningNum = new System.Windows.Forms.Label();
-            this.label17 = new System.Windows.Forms.Label();
+            this.lblColorYellow = new System.Windows.Forms.Label();
             this.label20 = new System.Windows.Forms.Label();
             this.lblNoticeNum = new System.Windows.Forms.Label();
-            this.label22 = new System.Windows.Forms.Label();
+            this.lblColorBlue = new System.Windows.Forms.Label();
             this.label23 = new System.Windows.Forms.Label();
             this.lblInfoNum = new System.Windows.Forms.Label();
-            this.label25 = new System.Windows.Forms.Label();
+            this.lblColorGreen = new System.Windows.Forms.Label();
             this.label26 = new System.Windows.Forms.Label();
             this.lblMachineNum = new System.Windows.Forms.Label();
             this.label28 = new System.Windows.Forms.Label();
             this.label29 = new System.Windows.Forms.Label();
             this.btnRefresh = new System.Windows.Forms.Button();
+            this.lblComment = new System.Windows.Forms.Label();
+            this.lblNumOfRow = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -234,8 +236,9 @@ namespace easeYARA.Forms
             this.dataGridView1.RowTemplate.Height = 25;
             this.dataGridView1.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(1201, 427);
+            this.dataGridView1.Size = new System.Drawing.Size(1200, 427);
             this.dataGridView1.TabIndex = 15;
+            this.dataGridView1.SizeChanged += new System.EventHandler(this.dataGridView1_SizeChanged);
             // 
             // txtbxKeyword1
             // 
@@ -280,6 +283,7 @@ namespace easeYARA.Forms
             // 
             // lblClear1
             // 
+            this.lblClear1.Cursor = System.Windows.Forms.Cursors.Hand;
             this.lblClear1.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.lblClear1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(126)))), ((int)(((byte)(140)))), ((int)(((byte)(224)))));
             this.lblClear1.Location = new System.Drawing.Point(945, 0);
@@ -447,6 +451,7 @@ namespace easeYARA.Forms
             // 
             // lblClear2
             // 
+            this.lblClear2.Cursor = System.Windows.Forms.Cursors.Hand;
             this.lblClear2.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.lblClear2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(126)))), ((int)(((byte)(140)))), ((int)(((byte)(224)))));
             this.lblClear2.Location = new System.Drawing.Point(946, 0);
@@ -592,6 +597,7 @@ namespace easeYARA.Forms
             // 
             // lblClear4
             // 
+            this.lblClear4.Cursor = System.Windows.Forms.Cursors.Hand;
             this.lblClear4.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.lblClear4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(126)))), ((int)(((byte)(140)))), ((int)(((byte)(224)))));
             this.lblClear4.Location = new System.Drawing.Point(946, 0);
@@ -724,6 +730,7 @@ namespace easeYARA.Forms
             // 
             // lblClear3
             // 
+            this.lblClear3.Cursor = System.Windows.Forms.Cursors.Hand;
             this.lblClear3.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.lblClear3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(126)))), ((int)(((byte)(140)))), ((int)(((byte)(224)))));
             this.lblClear3.Location = new System.Drawing.Point(946, 0);
@@ -834,15 +841,15 @@ namespace easeYARA.Forms
             this.label19.Text = "Keyword:";
             this.label19.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // label9
+            // lblColorRed
             // 
-            this.label9.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
-            this.label9.Font = new System.Drawing.Font("Segoe UI", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.label9.ForeColor = System.Drawing.Color.White;
-            this.label9.Location = new System.Drawing.Point(282, 73);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(11, 80);
-            this.label9.TabIndex = 25;
+            this.lblColorRed.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
+            this.lblColorRed.Font = new System.Drawing.Font("Segoe UI", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.lblColorRed.ForeColor = System.Drawing.Color.White;
+            this.lblColorRed.Location = new System.Drawing.Point(282, 73);
+            this.lblColorRed.Name = "lblColorRed";
+            this.lblColorRed.Size = new System.Drawing.Size(11, 80);
+            this.lblColorRed.TabIndex = 25;
             // 
             // label12
             // 
@@ -886,15 +893,15 @@ namespace easeYARA.Forms
             this.lblWarningNum.Text = "0";
             this.lblWarningNum.Click += new System.EventHandler(this.QuickFilter);
             // 
-            // label17
+            // lblColorYellow
             // 
-            this.label17.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(182)))));
-            this.label17.Font = new System.Drawing.Font("Segoe UI", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.label17.ForeColor = System.Drawing.Color.White;
-            this.label17.Location = new System.Drawing.Point(471, 73);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(11, 80);
-            this.label17.TabIndex = 28;
+            this.lblColorYellow.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(182)))));
+            this.lblColorYellow.Font = new System.Drawing.Font("Segoe UI", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.lblColorYellow.ForeColor = System.Drawing.Color.White;
+            this.lblColorYellow.Location = new System.Drawing.Point(471, 73);
+            this.lblColorYellow.Name = "lblColorYellow";
+            this.lblColorYellow.Size = new System.Drawing.Size(11, 80);
+            this.lblColorYellow.TabIndex = 28;
             // 
             // label20
             // 
@@ -924,15 +931,15 @@ namespace easeYARA.Forms
             this.lblNoticeNum.Text = "0";
             this.lblNoticeNum.Click += new System.EventHandler(this.QuickFilter);
             // 
-            // label22
+            // lblColorBlue
             // 
-            this.label22.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(142)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            this.label22.Font = new System.Drawing.Font("Segoe UI", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.label22.ForeColor = System.Drawing.Color.White;
-            this.label22.Location = new System.Drawing.Point(660, 73);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(11, 80);
-            this.label22.TabIndex = 31;
+            this.lblColorBlue.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(142)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.lblColorBlue.Font = new System.Drawing.Font("Segoe UI", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.lblColorBlue.ForeColor = System.Drawing.Color.White;
+            this.lblColorBlue.Location = new System.Drawing.Point(660, 73);
+            this.lblColorBlue.Name = "lblColorBlue";
+            this.lblColorBlue.Size = new System.Drawing.Size(11, 80);
+            this.lblColorBlue.TabIndex = 31;
             // 
             // label23
             // 
@@ -962,15 +969,15 @@ namespace easeYARA.Forms
             this.lblInfoNum.Text = "0";
             this.lblInfoNum.Click += new System.EventHandler(this.QuickFilter);
             // 
-            // label25
+            // lblColorGreen
             // 
-            this.label25.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(182)))));
-            this.label25.Font = new System.Drawing.Font("Segoe UI", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.label25.ForeColor = System.Drawing.Color.White;
-            this.label25.Location = new System.Drawing.Point(849, 73);
-            this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(11, 80);
-            this.label25.TabIndex = 34;
+            this.lblColorGreen.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(182)))));
+            this.lblColorGreen.Font = new System.Drawing.Font("Segoe UI", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.lblColorGreen.ForeColor = System.Drawing.Color.White;
+            this.lblColorGreen.Location = new System.Drawing.Point(849, 73);
+            this.lblColorGreen.Name = "lblColorGreen";
+            this.lblColorGreen.Size = new System.Drawing.Size(11, 80);
+            this.lblColorGreen.TabIndex = 34;
             // 
             // label26
             // 
@@ -997,6 +1004,7 @@ namespace easeYARA.Forms
             this.lblMachineNum.Size = new System.Drawing.Size(38, 45);
             this.lblMachineNum.TabIndex = 38;
             this.lblMachineNum.Text = "0";
+            this.lblMachineNum.Visible = false;
             // 
             // label28
             // 
@@ -1008,6 +1016,7 @@ namespace easeYARA.Forms
             this.label28.Name = "label28";
             this.label28.Size = new System.Drawing.Size(11, 80);
             this.label28.TabIndex = 37;
+            this.label28.Visible = false;
             // 
             // label29
             // 
@@ -1020,6 +1029,7 @@ namespace easeYARA.Forms
             this.label29.Size = new System.Drawing.Size(161, 45);
             this.label29.TabIndex = 36;
             this.label29.Text = "Machines";
+            this.label29.Visible = false;
             // 
             // btnRefresh
             // 
@@ -1040,27 +1050,54 @@ namespace easeYARA.Forms
             this.btnRefresh.UseVisualStyleBackColor = false;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
+            // lblComment
+            // 
+            this.lblComment.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.lblComment.AutoSize = true;
+            this.lblComment.Font = new System.Drawing.Font("Segoe UI Light", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.lblComment.ForeColor = System.Drawing.Color.White;
+            this.lblComment.Location = new System.Drawing.Point(591, 450);
+            this.lblComment.Name = "lblComment";
+            this.lblComment.Size = new System.Drawing.Size(119, 25);
+            this.lblComment.TabIndex = 40;
+            this.lblComment.Text = "Please Wait ...";
+            // 
+            // lblNumOfRow
+            // 
+            this.lblNumOfRow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblNumOfRow.AutoSize = true;
+            this.lblNumOfRow.Font = new System.Drawing.Font("Segoe UI Light", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.lblNumOfRow.ForeColor = System.Drawing.Color.White;
+            this.lblNumOfRow.Location = new System.Drawing.Point(1150, 701);
+            this.lblNumOfRow.Name = "lblNumOfRow";
+            this.lblNumOfRow.Size = new System.Drawing.Size(112, 19);
+            this.lblNumOfRow.TabIndex = 41;
+            this.lblNumOfRow.Text = "Number of rows: ";
+            this.lblNumOfRow.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
             // FormStatistics
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(44)))), ((int)(((byte)(52)))));
             this.ClientSize = new System.Drawing.Size(1332, 750);
+            this.Controls.Add(this.lblNumOfRow);
+            this.Controls.Add(this.lblComment);
             this.Controls.Add(this.btnRefresh);
             this.Controls.Add(this.lblMachineNum);
             this.Controls.Add(this.label28);
             this.Controls.Add(this.label29);
             this.Controls.Add(this.lblInfoNum);
-            this.Controls.Add(this.label25);
+            this.Controls.Add(this.lblColorGreen);
             this.Controls.Add(this.label26);
             this.Controls.Add(this.lblNoticeNum);
-            this.Controls.Add(this.label22);
+            this.Controls.Add(this.lblColorBlue);
             this.Controls.Add(this.label23);
             this.Controls.Add(this.lblWarningNum);
-            this.Controls.Add(this.label17);
+            this.Controls.Add(this.lblColorYellow);
             this.Controls.Add(this.label20);
             this.Controls.Add(this.lblAlertsNum);
-            this.Controls.Add(this.label9);
+            this.Controls.Add(this.lblColorRed);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.tableLayoutPanel4);
             this.Controls.Add(this.tableLayoutPanel3);
@@ -1138,21 +1175,23 @@ namespace easeYARA.Forms
         private System.Windows.Forms.Label lblClear2;
         private System.Windows.Forms.Label lblClear4;
         private System.Windows.Forms.Label lblClear3;
-        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label lblColorRed;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label lblAlertsNum;
         private System.Windows.Forms.Label lblWarningNum;
-        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Label lblColorYellow;
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.Label lblNoticeNum;
-        private System.Windows.Forms.Label label22;
+        private System.Windows.Forms.Label lblColorBlue;
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.Label lblInfoNum;
-        private System.Windows.Forms.Label label25;
+        private System.Windows.Forms.Label lblColorGreen;
         private System.Windows.Forms.Label label26;
         private System.Windows.Forms.Label lblMachineNum;
         private System.Windows.Forms.Label label28;
         private System.Windows.Forms.Label label29;
         private System.Windows.Forms.Button btnRefresh;
+        private System.Windows.Forms.Label lblComment;
+        private System.Windows.Forms.Label lblNumOfRow;
     }
 }

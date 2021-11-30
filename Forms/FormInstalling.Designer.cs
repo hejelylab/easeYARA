@@ -59,6 +59,7 @@ namespace easeYARA.Forms
             this.prgrsbarInstall.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.prgrsbarInstall.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(126)))), ((int)(((byte)(140)))), ((int)(((byte)(224)))));
             this.prgrsbarInstall.Location = new System.Drawing.Point(202, 534);
+            this.prgrsbarInstall.MarqueeAnimationSpeed = 20;
             this.prgrsbarInstall.Name = "prgrsbarInstall";
             this.prgrsbarInstall.Size = new System.Drawing.Size(931, 15);
             this.prgrsbarInstall.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
@@ -111,6 +112,7 @@ namespace easeYARA.Forms
             this.Text = "FormInstalling";
             this.ResumeLayout(false);
             this.PerformLayout();
+
         }
         #endregion
         private System.Windows.Forms.Label label4;

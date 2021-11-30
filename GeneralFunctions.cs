@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Security.Principal;
 using System.Text;
 using System.Windows.Forms;
-using easeYARA.Forms;
 namespace easeYARA
 {
     class GeneralFunctions
     {
-        public static void AddExternalRules()
+        static bool cancel = false;
+        public static bool AddExternalRules()
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             using (Ionic.Zip.ZipFile archive = new Ionic.Zip.ZipFile(ScanDetails.addRulesFileDir))
@@ -20,24 +19,56 @@ namespace easeYARA
                 if (passwordProtectedZIP)
                 {
                     string[] promptValue;
-                    if (ScanDetails.isScannerLocal)
-                    {
-                        promptValue = FormScanning.ShowDialog();
-                    }
-                    else
-                    {
-                        promptValue = FormGenerateScript.ShowDialog();
-                    }
+                    promptValue = ShowDialog(true);
                     var textBoxValue = promptValue[0];
+                    bool isPasswordCorrect = false;
+
+                    while (!isPasswordCorrect)
+                    {
+                        if (cancel)
+                        {
+                            cancel = false;
+                            return false;
+                        }
+                        if (Ionic.Zip.ZipFile.CheckZipPassword(archive.Name, textBoxValue))
+                        {
+                            isPasswordCorrect = true;
+                        }
+                        else
+                        {
+                            promptValue = ShowDialog(false);
+                            textBoxValue = promptValue[0];
+                        }
+                    }
                     Console.WriteLine(textBoxValue);
                     archive.Password = textBoxValue.ToString();
-                    archive.Encryption = Ionic.Zip.EncryptionAlgorithm.WinZipAes256; // the default: you might need to select the proper value here
+                    archive.Encryption = Ionic.Zip.EncryptionAlgorithm.WinZipAes256;
                     archive.StatusMessageTextWriter = Console.Out;
                 }
                 string yaraRulesPath = "";
                 if (ScanDetails.scanner == "loki")
                 {
                     yaraRulesPath = ScanDetails.scannerDir + "\\signature-base\\yara\\";
+
+                    if (!Directory.Exists(ScanDetails.scannerDir + "\\signature-base"))
+                    {
+                        Directory.SetCurrentDirectory(ScanDetails.scannerDir);
+                        System.Diagnostics.Process process = new System.Diagnostics.Process();
+                        System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+                        startInfo.UseShellExecute = false;
+                        startInfo.CreateNoWindow = true;
+                        startInfo.RedirectStandardOutput = true;
+                        startInfo.FileName = ScanDetails.scannerDir + "\\loki-upgrader.exe";
+                        startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                        process.StartInfo = startInfo;
+                        process.Start();
+                        while (!process.StandardOutput.EndOfStream)
+                        {
+                            Console.WriteLine(process.StandardOutput.ReadLine());
+                        }
+                        process.WaitForExit();
+                    }
+
                     if (passwordProtectedZIP)
                     {
                         try
@@ -46,7 +77,15 @@ namespace easeYARA
                         }
                         catch (Ionic.Zip.ZipException e)
                         {
-                            MessageBox.Show("File with the same name already exists, Copying File will be skipped");
+                            if (e is Ionic.Zip.BadPasswordException)
+                            {
+                                MessageBox.Show("Incorrect provided password, Copying File will be skipped");
+                                return false;
+                            }
+                            else
+                            {
+                                MessageBox.Show("File with the same name already exists, Copying File will be skipped");
+                            }
                         }
                     }
                     else
@@ -73,7 +112,14 @@ namespace easeYARA
                         }
                         catch (Ionic.Zip.ZipException e)
                         {
-                            MessageBox.Show("File with the same name already exists, Copying File will be skipped");
+                            if (e is Ionic.Zip.BadPasswordException)
+                            {
+                                MessageBox.Show("Incorrect provided password, Copying File will be skipped");
+                            }
+                            else
+                            {
+                                MessageBox.Show("File with the same name already exists, Copying File will be skipped");
+                            }
                         }
                     }
                     else
@@ -91,6 +137,7 @@ namespace easeYARA
 
                 }
             }
+            return true;
         }
         public static bool IsPasswordProtectedZipFile(string path)
         {
@@ -130,7 +177,7 @@ namespace easeYARA
                 foreach (string f in yaraFiles)
                 {
                     File.Delete(f);
-                    Directory.Delete(sourceDir);
+                    Directory.Delete(sourceDir, true);
                 }
             }
             catch (DirectoryNotFoundException dirNotFound)
@@ -140,6 +187,10 @@ namespace easeYARA
         }
         public static void copyYARARulesFilenames()
         {
+            String f;
+            List<String> rulesNameList = new List<String>();
+            List<String> removedFiles = new List<String>();
+
             var ext = new List<string> { "yar", "yara" };
             if (File.Exists(ScanDetails.scannerDir + "\\" + "index.yar"))
             {
@@ -149,10 +200,27 @@ namespace easeYARA
             List<string> list = new List<string>();
             foreach (string filename in myFiles)
             {
-                list.Add("include \"" + filename + "\"");
+                f = filename.Substring(filename.LastIndexOf('\\') + 1);
+
+                if (list.Count > 0 && rulesNameList.Contains(f))
+                {
+                    removedFiles.Add(filename);
+                }
+                else
+                {
+                    rulesNameList.Add(f);
+                    list.Add("include \"" + ".\\" + Path.GetRelativePath(ScanDetails.scannerDir, filename) + "\"");
+                }
+
             }
             String[] listArray = list.ToArray();
+
             File.WriteAllLines(ScanDetails.scannerDir + "\\index.yar", listArray);
+            if (removedFiles.Count > 0)
+            {
+                MessageBox.Show("The following file(s) won't be added to index.yar becuase there's already file with the same name: \n" + String.Join("\n", removedFiles));
+            }
+
         }
 
         public static bool IsAdministrator()
@@ -163,6 +231,40 @@ namespace easeYARA
                 return principal.IsInRole(WindowsBuiltInRole.Administrator);
             }
         }
+
+        public static string[] ShowDialog(bool isFirstTime)
+        {
+            Form prompt = new Form()
+            {
+                Width = 300,
+                Height = 180,
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                StartPosition = FormStartPosition.CenterScreen
+            };
+            System.Windows.Forms.Label textLabel = new System.Windows.Forms.Label() { Left = 40, Top = 20, Width = 200, Text = "Enter Zip File Password" };
+            TextBox textBox2 = new TextBox() { Left = 40, Top = 50, Width = 200 };
+            System.Windows.Forms.Label lblIncorrect = new System.Windows.Forms.Label() { Left = 40, Top = 110, Text = "Incorrect Password" };
+            lblIncorrect.ForeColor = System.Drawing.Color.Tomato;
+            if (isFirstTime)
+            {
+                lblIncorrect.Visible = false;
+            }
+            else
+            {
+                lblIncorrect.Visible = true;
+            }
+            Button confirmation = new Button() { Text = "Ok", Left = 40, Width = 90, Top = 80, DialogResult = DialogResult.OK };
+            confirmation.Click += (sender, e) => { prompt.Close(); };
+            Button btnCancel = new Button() { Text = "Cancel", Left = 150, Width = 90, Top = 80, DialogResult = DialogResult.OK };
+            btnCancel.Click += (sender, e) => { cancel = true; prompt.Close(); };
+
+            prompt.Controls.Add(textLabel);
+            prompt.Controls.Add(textBox2);
+            prompt.Controls.Add(lblIncorrect);
+            prompt.Controls.Add(confirmation);
+            prompt.Controls.Add(btnCancel);
+            prompt.AcceptButton = confirmation;
+            return prompt.ShowDialog() == DialogResult.OK ? new string[] { textBox2.Text } : null;
+        }
     }
 }
-// Scanner directory contains index.yar. Either remove it manually or run the application as admin

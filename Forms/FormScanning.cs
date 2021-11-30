@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -20,30 +18,16 @@ namespace easeYARA.Forms
             bw.DoWork += bw_DoWork;
             bw.RunWorkerCompleted += bw_RunWorkerCompleted;
             bw.RunWorkerAsync();
-            //btnNext.Visible = true;
         }
         void bw_DoWork(object sender, DoWorkEventArgs e)
         {
             if (ScanDetails.scanner == "loki")
             {
-                if (ScanDetails.isAddRules)
-                {
-                    GeneralFunctions.AddExternalRules();
-                }
+
                 runLokiScan();
             }
             else
             {
-                if (ScanDetails.isAddRules)
-                {
-                    GeneralFunctions.AddExternalRules();
-                }
-                if (!GeneralFunctions.IsAdministrator() && File.Exists(ScanDetails.scannerDir + "\\" + "index.yar"))
-                {
-                    MessageBox.Show("Scanner directory contains index.yar. Either remove it manually or run the application as administrator ");
-                    return;
-                }
-                GeneralFunctions.copyYARARulesFilenames();
                 runYaraScan();
             }
         }
@@ -61,7 +45,7 @@ namespace easeYARA.Forms
                 System.Diagnostics.Process process = new System.Diagnostics.Process();
                 System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
                 startInfo.CreateNoWindow = true;
-                
+
                 if (ScanDetails.isCPULessThan50)
                 {
                     startInfo.FileName = "\"" + ScanDetails.scannerDir + "\\procgov.exe" + "\"";
@@ -71,7 +55,7 @@ namespace easeYARA.Forms
                     }
                     else
                     {
-                        
+
                         startInfo.Arguments = " -e 40 -r  " + "\"\"" + ScanDetails.scannerDir + "\\loki.exe\" --allreasons --noprocscan --csv --nolog " + "--allhds" + "\"";
                     }
                 }
@@ -194,11 +178,11 @@ namespace easeYARA.Forms
                         startInfo.FileName = "\"" + ScanDetails.scannerDir + "\\loki.exe" + "\"";
                         if (ScanDetails.isScanMemory)
                         {
-                            startInfo.Arguments = " --allreasons --csv --nolog -p " + item + "\"\"";
+                            startInfo.Arguments = " --allreasons --csv --nolog -p \"" + item + "\"";
                         }
                         else
                         {
-                            startInfo.Arguments = " --allreasons --noprocscan --csv --nolog -p " + item + "\"\"";
+                            startInfo.Arguments = " --allreasons --noprocscan --csv --nolog -p \"" + item + "\"";
                         }
                     }
                     startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
@@ -232,7 +216,6 @@ namespace easeYARA.Forms
         {
             if (string.IsNullOrEmpty(hasBackspace))
                 return hasBackspace;
-            //StringBuilder result = new StringBuilder(hasBackspace.Length);
             String result = hasBackspace.TrimStart('\b', '\\', '|', '/', '\r', '\n', '-');
             return result;
         }
@@ -279,6 +262,8 @@ namespace easeYARA.Forms
             string output = "";
             string error = "";
             string path = null;
+
+
             if (ScanDetails.isScanAllDrives)
             {
                 List<string> localDrives = ScanDetails.getLocalDrives();
@@ -309,7 +294,7 @@ namespace easeYARA.Forms
                     {
                         process.StartInfo.Verb = "runas";
                     }
-                    path = String.Format(ScanDetails.scannerDir + "\\{0}_{1}_{2}.log", ScanDetails.computerName, scannedDrive.TrimEnd('\\',':'), dateOfScan);
+                    path = String.Format(ScanDetails.scannerDir + "\\{0}_{1}_{2}.log", ScanDetails.computerName, scannedDrive.TrimEnd('\\', ':'), dateOfScan);
                     ScanDetails.scanResultFilesDirs.Add(path);
                     StreamWriter streamWriter = new StreamWriter(path);
 
@@ -443,9 +428,8 @@ namespace easeYARA.Forms
                     {
                         startInfo.FileName = "\"" + ScanDetails.scannerDir + "\\yara64.exe" + "\" ";
                         startInfo.Arguments = "\"" + ScanDetails.scannerDir + "\\" + "index.yar" + "\"" + " -r " + "\"" + item + "\"";
-                        
+
                     }
-                    //MessageBox.Show(startInfo.FileName + startInfo.Arguments);
                     startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                     process.StartInfo = startInfo;
                     process.StartInfo.UseShellExecute = false;
@@ -502,28 +486,11 @@ namespace easeYARA.Forms
                 }
             }
         }
-        public static string[] ShowDialog()
-        {
-            Form prompt = new Form()
-            {
-                Width = 400,
-                Height = 150,
-                FormBorderStyle = FormBorderStyle.FixedDialog,
-                StartPosition = FormStartPosition.CenterScreen
-            };
-            System.Windows.Forms.Label textLabel = new System.Windows.Forms.Label() { Left = 50, Top = 10, Text = "Enter Password" };
-            TextBox textBox2 = new TextBox() { Left = 50, Top = 30, Width = 200 };
-            Button confirmation = new Button() { Text = "Ok", Left = 250, Width = 100, Top = 70, DialogResult = DialogResult.OK };
-            confirmation.Click += (sender, e) => { prompt.Close(); };
-            prompt.Controls.Add(textBox2);
-            prompt.Controls.Add(textLabel);
-            prompt.Controls.Add(confirmation);
-            prompt.AcceptButton = confirmation;
-            return prompt.ShowDialog() == DialogResult.OK ? new string[] { textBox2.Text } : null;
-        }
+
         private void btnNext_Click(object sender, EventArgs e)
         {
             OpenNextForm(new Forms.FormScanCompleted());
+            this.Close();
         }
         private void OpenNextForm(Form nextForm)
         {

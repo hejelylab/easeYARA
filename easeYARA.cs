@@ -74,10 +74,5 @@ namespace easeYARA
         {
             OpenNextForm(new Forms.FormChooseStatisticsDirectory());
         }
-
-        //private void MainForm_Load(object sender, EventArgs e)
-        //{
-        //    MessageBox.Show("Some of the application features needs Admin privileges to run correctly");
-        //}
     }
 }
